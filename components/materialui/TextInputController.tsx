@@ -9,22 +9,22 @@ import {
 } from "react-hook-form";
 export const TextInputController = (props: UseControllerProps & UseControllerReturn & TextFieldProps)  => {
   const  { field }:UseControllerReturn = props as UseControllerReturn;  
-  const {...customProps}:TextFieldProps = props as TextFieldProps;
+  const {...customProps}:TextFieldProps = { props } as TextFieldProps;
 
   return (
     <Controller
       {...field}
-      {...customProps}    
+      {...customProps}   
       render={({ field: { onChange, onBlur, value, ref }, formState, fieldState }) => {
         const error = get(formState.errors, props.name);
-        const errorText = fieldState.invalid ? error.message : "";      
+        const errorText = fieldState.invalid ? error.message : "";     
+        const ffield = field; 
         return (
-        <>
         <FormControl variant="standard">
-          <TextField {...field} 
+          <TextField 
                     fullWidth={true}
                     id={props.name}
-                    required={props.required}
+                    required={true}
                     label={props.label}
                     helperText={errorText ? errorText : ""}
                     error={!!errorText} 
@@ -33,10 +33,10 @@ export const TextInputController = (props: UseControllerProps & UseControllerRet
                     margin="normal"
                     onChange={onChange} // send value to hook form
                     onBlur={onBlur} // notify when input is touched
-                    value={value} // return updated value
-                    ref={ref} // set ref for focus management      
+                    value={value || ""} // return updated value
+                    inputRef={ref} // set ref for focus management      
       /> </FormControl>
-      </> )
+ )
         }
     }
       />

@@ -6,7 +6,7 @@ import {
   useFormContext,
   UseFormReturn,
 } from "react-hook-form";
-import { MultiSelectController } from "../materialui/MultiSelectController";
+import { DatePickerController } from "../materialui/DatePickerController";
 import { SelectController } from "../materialui/SelectController";
 import { TextInputController } from "../materialui/TextInputController";
 import Box from "@mui/material/Box";
@@ -37,7 +37,12 @@ function StepOne({
         
       }} mt={2}>
         <SelectController control={control} required={true} {...useController(register("title")) as UseControllerReturn} label="Title" name="title"  menuItems={titles}/> 
-        </Box>          
+        </Box>   
+        <Box       sx={{
+        '& .MuiFormControl-root': { m: 1, width: '50ch' },
+      }} mt={2}>
+        <DatePickerController control={control} required={true}  {...useController(register("registrationDate")) as UseControllerReturn} label="registrationDate" name="registrationDate"/> 
+        </Box>                      
         <Box       sx={{
         '& .MuiTextField-root': { m: 1, width: '50ch' },
       }} mt={2}>

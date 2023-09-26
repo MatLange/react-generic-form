@@ -3,21 +3,15 @@ import  StepOne  from "../components/formSteps/StepOne";
 import  StepTwo  from "../components/formSteps/StepTwo";
 import  StepThree  from "../components/formSteps/StepThree";
 import  WizardResult  from "../components/formSteps/WizardResult";
-import { Layout } from "../components/Layout";
-import { StepsLayout } from "../components/StepsLayout";
 import { useRouter } from "next/router";
 import { FormProvider, 
   useForm,
 } from 'react-hook-form';
-import { SelectController } from "../components/materialui/SelectController";
-import { TextInputController } from "../components/materialui/TextInputController";
-import { validationSchemas } from "../validations/validations";
-import * as Yup from 'yup';
+import { validationSchemas } from "../validations/validationSchemas";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, ButtonProps, createMuiTheme, Paper, Step, StepLabel, Stepper,ThemeProvider } from "@material-ui/core";
 import Box from "@mui/material/Box";
 import { makeStyles } from "@material-ui/core";
-import Stack from '@mui/material/Stack';
 
 const fruits = [
   { id: 1, name: "Bananas 🍌" },
@@ -253,7 +247,7 @@ const useStyles = makeStyles((theme) => ({
   >       
 <div className='flex flex-col justify-between min-w-[500px] min-h-[200px]'>
       <div className="card m-3">
-      <h5 className="card-header">Next.js - Form Validation Example</h5>
+      <h5 className="card-header">Registration wizard</h5>
         <div className="card-body"></div>  
   <ThemeProvider theme={theme}>
         <Stepper activeStep={page}>
