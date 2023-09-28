@@ -8,10 +8,15 @@ import { FormProvider,
   useForm,
 } from 'react-hook-form';
 import { validationSchemas } from "../validations/validationSchemas";
+import { dataFetcher, dataPoster, dataUpdater } from "../datahandling/datahandling";
+
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, ButtonProps, createMuiTheme, Paper, Step, StepLabel, Stepper,ThemeProvider } from "@material-ui/core";
 import Box from "@mui/material/Box";
 import { makeStyles } from "@material-ui/core";
+import useSWR from 'swr';
+
+
 
 const fruits = [
   { id: 1, name: "Bananas 🍌" },
@@ -22,15 +27,74 @@ const fruits = [
 ]
 
 const FormTitles = ["Sign Up", "Personal Info", "Other"];
+const fetcher = (url:string) => fetch(url).then((res) => res.json());
 
 const Home = () => {
   const router = useRouter();
   const formStep = router.query.step ?? 0;
-  
+  const { data, error } = useSWR('/api/hello', dataFetcher);
+  const d = data;
+  //alert((data as any)?.toString());  
+
   // get functions to build form with useForm() hook
   const goToStep = (step : any, asPath:string) => {
     router.push(`/?step=${step}`, asPath);
   };
+
+  function handleReadData(e:any) {
+    // e.preventDefault();
+    const newItem = {
+      "id": 8222,
+      "uid": "a15c1f1d-9e4e-4dc7-9c45-c04412fc5064",
+      "name": "Nuxt.js",
+      "language": "JavaScript",
+    };
+    // ToDo: Remove tests
+    // Only for testing purposes: Create item 
+    dataPoster("/api/hello", JSON.stringify(newItem)).then((data:any) => {
+      console.log(data);
+      // Only for testing purposes: update item 
+      const uid = data?.uid;
+      data.name = "Nixt.js";
+      // ToDo: updateItem needs to be corrected
+      dataUpdater("/api/hello", JSON.stringify(data)).then((data:any) => {
+        console.log(data);
+      });
+    });
+  }
+
+
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("/api/projects", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          logo: formData.logo,
+          title: formData.title,
+          standard: formData.standard,
+          twitter: formData.twitter,
+          discord: formData.discord,
+          telegram: formData.telegram,
+          userId: session?.user?.email, // We're assuming you are storing user in your component's state
+        }),
+      });
+
+      if (response.ok) {
+        console.log("form successfully submitted");
+        // Handle success - maybe show a notification or redirect the user
+      } else {
+        console.log("submission failed");
+        // Handle error - show a notification or handle error
+      }
+    } catch (error) {
+      return error;
+    }
+  };
+
   const [page, setPage] = useState(0);
   const [completed, setCompleted] = useState(false);
 
@@ -87,19 +151,20 @@ const Home = () => {
     return page === fieldGroups.length - 1;
   }
 
-  const handleSave = async () => {
+  const handleSave = async (e:any) => {
     if (isLastStep()) {
       await formMethods.handleSubmit(onSubmit, onInvalid);
       setCompleted(true);
     } else {
-      await handleNext();
+      await handleNext(e);
     }
   };
 
-  const handleNext = async () => {
+  const handleNext = async (e:any) => {
     if (isLastStep()) {
       setCompleted(true);
     }
+    handleReadData(e);
     const isStepValid = await formMethods.trigger();
     if (isStepValid) setPage((prevActiveStep) => prevActiveStep + 1);
   };
@@ -236,7 +301,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 //const classes = useStyles();
+if (error) return <div>Failed to load</div>;
+//Handle the loading state
+if (!data) return <div>Loading...</div>;
 
+console.log(data);
   return (
 <>
   <Box

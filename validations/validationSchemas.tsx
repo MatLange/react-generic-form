@@ -14,6 +14,7 @@
             title: Yup.string()
                 .required('Title is required'),       
             registrationDate: Yup.date()
+                .typeError(`Date is invalid.`) // ex: Expected a value of type date but got: Invalid Date
                 .min(
                     Yup.ref('registrationDate'),
                     ({ min }) => `Date needs to be before ${formatDate(min)}!!`,
