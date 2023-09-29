@@ -49,6 +49,7 @@ const createItemInJSONFile = async (data:any) => {
         return "";
     }
     let error;
+    let result = { error: {}, item: null };
     try {
         const content = JSON.parse(jsonContent || "") as any;
         if (data) { 
@@ -58,13 +59,14 @@ const createItemInJSONFile = async (data:any) => {
             content.records = records;
         }
         error = writeJSONFile(content);
+        result = (error === undefined) ? {"error": error, "item": content} : result;
     }
     catch(parseError) {
         console.log(parseError);
         
     }
     finally {
-        return error;    
+        return result;    
     }
 };  
 
@@ -74,6 +76,7 @@ const updateItemInJSONFile = async (uid: string, data:any) => {
         return "";
     }
     let error = {};
+    let result = { error: {}, item: null };
     try {
         const content = JSON.parse(jsonContent || "") as any;
         if (data) { 
@@ -85,12 +88,13 @@ const updateItemInJSONFile = async (uid: string, data:any) => {
             }
         }
         error = writeJSONFile(content);
+        result = (error === undefined) ? {"error": error, "item": content} : result;
     }
     catch(parseError) {
         console.log(parseError);
     }
     finally {
-        return error;    
+        return result;    
     }
 };  
 export default async function handler(
@@ -99,7 +103,7 @@ export default async function handler(
 ) {
     const requestMethod = req?.method;
     const body = req?.body ? JSON.parse(req?.body) : "" as any;
-    let error;
+    let result;
     switch (requestMethod) {
         case 'GET':
 
@@ -113,9 +117,10 @@ export default async function handler(
                 res.status(200).json({ message: `Body empty. No action taken.` });
                 return;
             }
-            error = await createItemInJSONFile(body);
-            if (error === undefined) {
-                res.status(200).json({ message: `You submitted the following data: ${JSON.stringify(body)}` });
+            result = await createItemInJSONFile(body);
+            const { createError, createItem } = result as any;
+            if (createError === undefined) {
+                res.status(200).json({ message: `You submitted the following data: ${JSON.stringify(createItem)}` });
             }
             break;
         case 'PATCH':
@@ -123,9 +128,10 @@ export default async function handler(
                 res.status(200).json({ message: `Body empty. No action taken.` });
                 return;
             }            
-            error = await updateItemInJSONFile(body.uid || "" as string, body);
-            if (error === undefined) {
-                res.status(200).json({ message: `You submitted the following data: ${JSON.stringify(body)}` });
+            result = await updateItemInJSONFile(body.uid || "" as string, body);
+            const { updateError, updateItem } = result as any;
+            if (updateError === undefined) {
+                res.status(200).json({ message: `You submitted the following data: ${JSON.stringify(updateItem)}` });
             }
             break;
     // handle other HTTP methods        
