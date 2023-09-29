@@ -45,11 +45,11 @@ const writeJSONFile = async (data:any) => {
 
 const createItemInJSONFile = async (data:any) => {
     const jsonContent = await readJSONFile();
+    let result = { error: {} as any, item: null as any};
     if (!jsonContent) {
-        return "";
+        return result;
     }
     let error;
-    let result = { error: {}, item: null };
     try {
         const content = JSON.parse(jsonContent || "") as any;
         if (data) { 
@@ -58,8 +58,8 @@ const createItemInJSONFile = async (data:any) => {
             records.push(data as never);
             content.records = records;
         }
-        error = writeJSONFile(content);
-        result = (error === undefined) ? {"error": error, "item": content} : result;
+        error = await writeJSONFile(content);
+        result = (error === undefined) ? {error: error, item: data} : result;
     }
     catch(parseError) {
         console.log(parseError);
@@ -72,11 +72,11 @@ const createItemInJSONFile = async (data:any) => {
 
 const updateItemInJSONFile = async (uid: string, data:any) => {
     const jsonContent = await readJSONFile();
+    let result = { error: {} as any, item: null as any};
     if (!jsonContent) {
-        return "";
+        return result;
     }
-    let error = {};
-    let result = { error: {}, item: null };
+    let error;
     try {
         const content = JSON.parse(jsonContent || "") as any;
         if (data) { 
@@ -87,8 +87,8 @@ const updateItemInJSONFile = async (uid: string, data:any) => {
                 content.records = records;
             }
         }
-        error = writeJSONFile(content);
-        result = (error === undefined) ? {"error": error, "item": content} : result;
+        error = await writeJSONFile(content);
+        result = (error === undefined) ? {error: error, item: data} : result;
     }
     catch(parseError) {
         console.log(parseError);
@@ -103,7 +103,7 @@ export default async function handler(
 ) {
     const requestMethod = req?.method;
     const body = req?.body ? JSON.parse(req?.body) : "" as any;
-    let result;
+    let result, error, item;
     switch (requestMethod) {
         case 'GET':
 
@@ -118,20 +118,20 @@ export default async function handler(
                 return;
             }
             result = await createItemInJSONFile(body);
-            const { createError, createItem } = result as any;
-            if (createError === undefined) {
-                res.status(200).json({ message: `You submitted the following data: ${JSON.stringify(createItem)}` });
+            if (result?.error as any === undefined) {
+                res.status(200).json( { ...result, message: `You submitted the following data: ${JSON.stringify(result?.item)}` });
             }
             break;
         case 'PATCH':
             if (!body) {
-                res.status(200).json({ message: `Body empty. No action taken.` });
+                res.status(200).json( {  message: `Body empty. No action taken.` });
                 return;
             }            
             result = await updateItemInJSONFile(body.uid || "" as string, body);
-            const { updateError, updateItem } = result as any;
-            if (updateError === undefined) {
-                res.status(200).json({ message: `You submitted the following data: ${JSON.stringify(updateItem)}` });
+            error = result?.error as any;
+            item = result?.item as any;
+            if (error === undefined) {
+                res.status(200).json({ ...result, message: `You submitted the following data: ${JSON.stringify(item)}` });
             }
             break;
     // handle other HTTP methods        

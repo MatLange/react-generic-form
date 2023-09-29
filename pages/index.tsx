@@ -54,46 +54,14 @@ const Home = () => {
     dataPoster("/api/hello", JSON.stringify(newItem)).then((data:any) => {
       console.log(data);
       // Only for testing purposes: update item 
-      const uid = data?.uid;
-      data.name = "Nixt.js";
+      newItem.uid = data?.item?.uid;
+      newItem.name = "Nixt.js";
       // ToDo: updateItem needs to be corrected
-      dataUpdater("/api/hello", JSON.stringify(data)).then((data:any) => {
+      dataUpdater("/api/hello", JSON.stringify(newItem)).then((data:any) => {
         console.log(data);
       });
     });
   }
-
-
-  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("/api/projects", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          logo: formData.logo,
-          title: formData.title,
-          standard: formData.standard,
-          twitter: formData.twitter,
-          discord: formData.discord,
-          telegram: formData.telegram,
-          userId: session?.user?.email, // We're assuming you are storing user in your component's state
-        }),
-      });
-
-      if (response.ok) {
-        console.log("form successfully submitted");
-        // Handle success - maybe show a notification or redirect the user
-      } else {
-        console.log("submission failed");
-        // Handle error - show a notification or handle error
-      }
-    } catch (error) {
-      return error;
-    }
-  };
 
   const [page, setPage] = useState(0);
   const [completed, setCompleted] = useState(false);
