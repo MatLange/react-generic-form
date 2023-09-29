@@ -70,7 +70,6 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.46.1",
     "react-scripts": "4.0.0",
-    "swr": "^2.2.4",
     "tailwind-merge": "^1.10.0",
     "yup": "^1.2.0",
     "zod": "^3.21.4",

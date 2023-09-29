@@ -44,12 +44,12 @@ function StepOne({
         <DatePickerController control={control} required={true}  {...useController(register("registrationDate")) as UseControllerReturn} label="registrationDate" name="registrationDate"/> 
         </Box>                      
         <Box       sx={{
-        '& .MuiFormControl-root': { m: 1, width: '50ch' },
+        '& .MuiTextField-root': { m: 1, width: '50ch' },
       }} mt={2}>
         <TextInputController control={control} required={true}  {...useController(register("firstName")) as UseControllerReturn} label="firstName" name="firstName"/> 
         </Box>                
         <Box       sx={{
-        '& .MuiFormControl-root': { m: 1, width: '50ch' },
+        '& .MuiTextField-root': { m: 1, width: '50ch' },
       }} mt={2}>
         <TextInputController control={control} required={true}  {...useController(register("lastName")) as UseControllerReturn} label="lastName" name="lastName"/> 
         </Box>        
