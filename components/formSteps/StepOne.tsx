@@ -28,7 +28,7 @@ function StepOne({
 }) {
 
   return (
-      <>
+      <div>
     <Box flexDirection="column"
                   display="flex"
                   alignItems="center" p={2}>
@@ -54,7 +54,7 @@ function StepOne({
         <TextInputController control={control} required={true}  {...useController(register("lastName")) as UseControllerReturn} label="lastName" name="lastName"/> 
         </Box>        
         </Box>
-      </>
+      </div>
     )
 }
 

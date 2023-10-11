@@ -1,4 +1,4 @@
- import * as React from "react";
+ import * as React  from "react";
  import TextField from '@mui/material/TextField';
 import { FormControl, TextFieldProps } from "@material-ui/core";
 import {
@@ -12,15 +12,18 @@ export const TextInputController = (props: UseControllerProps & UseControllerRet
   const {...customProps}:TextFieldProps = { props } as TextFieldProps;
 
   return (
+    <div>
     <Controller
       {...field}
       {...customProps}   
       render={({ field: { onChange, onBlur, value, ref }, formState, fieldState }) => {
         const error = get(formState.errors, props.name);
         const errorText = fieldState.invalid ? error.message : "";     
-        const ffield = field; 
+
         return (
+        <div>
         <FormControl variant="standard">
+        <div>
           <TextField 
                     fullWidth={true}
                     id={props.name}
@@ -34,12 +37,15 @@ export const TextInputController = (props: UseControllerProps & UseControllerRet
                     onChange={onChange} // send value to hook form
                     onBlur={onBlur} // notify when input is touched
                     value={value || ""} // return updated value
-                    inputRef={ref} // set ref for focus management      
-      /> </FormControl>
- )
+                    inputRef={field.ref} // set ref for focus management      
+      /> 
+      </div>      
+      </FormControl>
+      </div>)
         }
     }
       />
+      </div>
   );
 };
 
