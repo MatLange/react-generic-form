@@ -57,8 +57,6 @@ const fruits = [
 const FormTitles = ["Sign Up", "Personal Info", "Other"];
 const fetcher = (url : string) => fetch(url).then((res) => res.json());
 
-
-
 //export async function getServerSideProps({ params }:any) {
 /* export async function getStaticProps() {
     const newRecord = {
@@ -142,8 +140,12 @@ const Home = ({formData}:any) => {
     const currentValidationSchema = validationSchemas[page];
     // const { register, handleSubmit, reset, trigger, control, formState } =
     // useForm({...currentValidationSchema, mode: 'all'});
-    const formMethods = useForm({resolver: yupResolver(currentValidationSchema), mode: 'all'});
-
+    
+/*     const formMethods = useForm({resolver: yupResolver(currentValidationSchema), defaultValues: {
+        firstName: 'Hans',
+        lastName: 'Dampf'
+      }, mode: 'all'});
+ */
     /*   const formMethods = useForm({
     shouldUnregister: false,
     defaultValues,
@@ -151,7 +153,7 @@ const Home = ({formData}:any) => {
     mode: "onChange"
   });
  */
-    const {errors, isValid} = formMethods.formState;
+    //const {errors, isValid} = formMethods.formState;
 
 /*     const [formData,
         setFormData] = useState({
@@ -297,7 +299,7 @@ console.log(data); */
                 className="w-full h-full flex flex-col justify-center items-center p-4"
                 style={{ minWidth: 250, maxWidth: 600, margin: 'auto' }}
                 >                
-          <TodoList formData={formData} isValid={isValid} completed={completed} formMethods={formMethods} fieldGroups={fieldGroups} theme={theme} page={page} user={supabase.auth.user()} />
+          <TodoList formData={formData} completed={completed} fieldGroups={fieldGroups} theme={theme} page={page} user={supabase.auth.user()} />
                  <button
                     className="btn-black w-full mt-12"
                     onClick={async () => {

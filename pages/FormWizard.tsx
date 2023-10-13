@@ -5,6 +5,8 @@ import Navigation from "../components/Navigation";
 import PageDisplay from "../components/PageDisplay";
 import {supabase} from "../datahandling/databasehandling";
 import {Step, StepLabel, Stepper, ThemeProvider} from "@material-ui/core";
+import {validationSchemas} from "../validations/validationSchemas";
+import {yupResolver} from "@hookform/resolvers/yup";
 
 const Todo = ({todo, onDelete} : any) => {
     const [isCompleted,
@@ -13,7 +15,7 @@ const Todo = ({todo, onDelete} : any) => {
     const toggle = async() => {
         try {
             const {data, error} : any = await supabase
-                .from('todos')
+                .from('formData')
                 .update({
                     is_complete: !isCompleted
                 })
@@ -81,62 +83,64 @@ function onSubmit(data : any) {
     return false;
 }
 export default function FormWizard({
-    formdata,
-    isValid,
     completed,
-    formMethods,
     fieldGroups,
     theme,
     page,
     user
 } : any) {
-    const [todos,
-        setTodos] = useState([]);
+    const [formData,
+        setFormData] = useState([] as any[]);
     const [newTaskText,
         setNewTaskText] = useState('');
     const [errorText,
         setError] = useState('');
 
+    let formDataValues;
     useEffect(() => {
-        fetchTodos()
-    }, [])
+        //addTodo("Hunz");
+        fetchFormData();
+    }, []);
+    const currentValidationSchema = validationSchemas[page];
+    const formMethods = useForm({resolver: yupResolver(currentValidationSchema), values:formData, mode: 'all'});
 
-    const fetchTodos = async() => {
-        const {data: todos, error} : any = await supabase
-            .from('todos')
-            .select('*')
-            .order('id', {ascending: true});
-        (todos || []).forEach((todo : any) => (console.log('data ' + todo.task)))
+      const {errors, isValid} = formMethods.formState;      
 
+    const fetchFormData = async() => {
+        const {data: formData, error} : any = await supabase
+            .from('formData')
+            .select('fieldData')
+            .order('id', {ascending: true})
+            .single();
+        const fieldData = formData?.fieldData;
+        console.log('formData: ' + JSON.stringify(fieldData));
         if (error) 
             console.log('error', error)
         else 
-            setTodos(todos)
+            setFormData(fieldData as any)
+        return formData;
     }
-    const addTodo = async(taskText : any) => {
-        const task = taskText.trim();
-        if (task.length) {
+    const addTodo = async(name : any) => {
+        const firstName = name.trim();
+        if (firstName.length) {
             const {data: todo, error} : any = await supabase
-                .from('todos')
-                .insert({task, user_id: user.id})
+                .from('formData')
+                .insert({firstName})
                 .single();
             if (error) 
                 setError(error.message)
             else 
-                setTodos([
-                    ...todos,
-                    todo
-                ])
+                setFormData([...formData,todo]);
         }
     }
 
     const deleteTodo = async(id : any) => {
         try {
             await supabase
-                .from('todos')
+                .from('formData')
                 .delete()
                 .eq('id', id);
-            setTodos(todos.filter((x : any) => x.id != id))
+            setFormData(formData.filter((x : any) => x.id != id))
         } catch (error) {
             console.log('error', error)
         }

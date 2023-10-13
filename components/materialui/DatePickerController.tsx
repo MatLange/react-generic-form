@@ -6,6 +6,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DatePickerProps } from '@mui/x-date-pickers/DatePicker';
 import TextField from '@mui/material/TextField';
 import { localeDatePattern } from "../../dates/dateFormat";
+import dayjs from 'dayjs'; 
 
 import {
   Controller,
@@ -37,14 +38,14 @@ export const DatePickerController = (props : UseControllerProps & UseControllerR
               required: true,
               error: !!errorText,
               helperText: errorText ? errorText : "",
-              value: value || null
+              value: dayjs(value) || null
             },
           }}               
           label={props.label}
           onChange={(newValue) =>
             onChange({ target: { name, value: newValue } })
           }          
-          value={value || null} // return updated value
+          value={dayjs(value) || null} // return updated value
          />          
 {/*         <FormHelperText error={!!errorText}>{errorText}</FormHelperText>
  */}      </ FormControl>
