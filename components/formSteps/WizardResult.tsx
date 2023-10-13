@@ -1,5 +1,4 @@
-import { Layout } from "../Layout"
-import { StepsLayout } from "../StepsLayout"
+import Box from "@mui/material/Box";
 
 type GivenValueProps = {
   givenValue: string
@@ -17,8 +16,9 @@ const WizardResult = (props: any ) => {
   const nameAndTitle = getValues("firstName") + " " + getValues("lastName") + " ";
 
   return (
-    <Layout>
-      <StepsLayout>
+    <Box flexDirection="column"
+                  display="flex"
+                  alignItems="center" p={2}>
         <div className='flex flex-col justify-between min-w-[500px] min-h-[200px]'>
           <div className='flex flex-col gap-2'>
             <p className='text-xl'>
@@ -32,8 +32,7 @@ const WizardResult = (props: any ) => {
             </p>  
           </div>
         </div>
-      </StepsLayout>
-    </Layout>
+    </Box>        
   )
 }
 

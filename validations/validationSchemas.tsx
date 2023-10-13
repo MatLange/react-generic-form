@@ -5,10 +5,20 @@
     import { array as yupArray } from "yup";
 
 
+    function formatDate(date:any) {
+        return new Date(date).toLocaleDateString()
+    }    
+
     export const validationSchemas: Array<any> = [
         Yup.object({
             title: Yup.string()
-                .required('Title is required'),                  
+                .required('Title is required'),       
+            registrationDate: Yup.date()
+                .min(
+                    Yup.ref('registrationDate'),
+                    ({ min }) => `Date needs to be before ${formatDate(min)}!!`,
+                    )
+                .required('Registration date is required'),
             firstName: Yup.string()
                 .required('First Name is required'),
             lastName: Yup.string()
@@ -46,3 +56,11 @@
             acceptTerms: Yup.bool()
                 .oneOf([true], 'Accept Ts & Cs is required')
         })];
+        
+        const schema = validationSchemas[0];
+        const isValid = schema.validateSync({
+            title: "Dr.",
+            registrationDate: "2020-02-02",
+            firstName: "Hu",
+            lastName: "Hu",            
+          });

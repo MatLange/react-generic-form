@@ -50,8 +50,7 @@ export const SelectController = (props : UseControllerProps & UseControllerRetur
           /* onChange={(e) => field.onChange(transform.output(e))} */
           onChange={onChange}
           onBlur={onBlur} // notify when input is touched
-          value={value} // return updated value
-          ref={ref} // set ref for focus management      
+          value={value || ""} // return updated value
         >          
       {props.menuItems?.map((item, index) => {
             return (
