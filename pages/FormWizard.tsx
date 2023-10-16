@@ -75,20 +75,17 @@ const Alert = ({text} : any) => (
     </div>
 )
 
-function onSubmit(data : any) {
-    // display form data on success setCompleted(true);
-
-    alert('SUCCESS!! :-)\n\n' + JSON.stringify(data, null, 4));
-
-    return false;
-}
 export default function FormWizard({
-    completed,
-    fieldGroups,
     theme,
-    page,
     user
 } : any) {
+
+    const [page,
+        setPage] = useState(0);
+    const [completed,
+        setCompleted] = useState(false);
+    const [formDataId,
+            setFormDataId] = useState("");
     const [formData,
         setFormData] = useState([] as any[]);
     const [newTaskText,
@@ -103,13 +100,13 @@ export default function FormWizard({
     }, []);
     const currentValidationSchema = validationSchemas[page];
     const formMethods = useForm({resolver: yupResolver(currentValidationSchema), values:formData, mode: 'all'});
+    const {errors, isValid} = formMethods.formState;      
 
-      const {errors, isValid} = formMethods.formState;      
 
     const fetchFormData = async() => {
         const {data: formData, error} : any = await supabase
             .from('formData')
-            .select('fieldData')
+            .select('id, fieldData')
             .order('id', {ascending: true})
             .single();
         const fieldData = formData?.fieldData;
@@ -117,9 +114,11 @@ export default function FormWizard({
         if (error) 
             console.log('error', error)
         else 
-            setFormData(fieldData as any)
+            setFormData(JSON.parse(fieldData) as any)
+            setFormDataId(formData?.id as any)
         return formData;
-    }
+    };
+
     const addTodo = async(name : any) => {
         const firstName = name.trim();
         if (firstName.length) {
@@ -134,6 +133,25 @@ export default function FormWizard({
         }
     }
 
+    const updateData = async (tableName: string, id:string, dataRecord:any)  => {
+        try {
+          const { data:formData, error } = await supabase
+            .from("formData")
+            .update({ ...dataRecord })
+            .eq('id', id)
+            .single();
+          if (error) {
+            throw error;
+          } else {
+            const fieldData = formData?.fieldData;
+            //setFormData(fieldData as any)
+          }
+          //setIsCompleted(data.is_complete)
+        } catch (error) {
+          console.log('error', error);
+        }
+    };
+
     const deleteTodo = async(id : any) => {
         try {
             await supabase
@@ -145,6 +163,71 @@ export default function FormWizard({
             console.log('error', error)
         }
     }
+
+    const onSubmit = (data : any) => {
+        // display form data on success setCompleted(true);
+        console.log("FormData: " + formData);
+        const fieldData = data;
+        updateData("", formDataId, { "fieldData": JSON.stringify(data, null, 4) });
+        alert('SUCCESS!! :-)\n\n' + JSON.stringify(data, null, 4));
+        return false;
+    }
+
+    function handleReadData(e : any) {
+        //e.preventDefault();
+    }
+
+    function onInvalid(data : any) {
+        // display form data on success
+        formMethods.trigger();
+    }
+    /** Nnavigation between steps */
+    const rightArrow = "https://ik.imagekit.io/lrjseyuxi3m/youtube/Form/next-arrow_1pmaQTqF3.svg?updated" +
+            "At=1634410703345";
+    const leftArrow = "https://ik.imagekit.io/lrjseyuxi3m/youtube/Form/back-arrow_ZBmeHiBP3.svg?updated" +
+            "At=1634410703363";
+    const fieldGroups = ["Step One", "Step Two", "Step Three", "Confirm"];
+    
+    function isLastStep() {
+        return page === fieldGroups.length - 1;
+    }
+
+    const handleSave = (e : any) => {
+        if (isLastStep()) {
+            //formMethods.handleSubmit(onSubmit, onInvalid);
+            setCompleted(true);
+        } else {
+            handleNext(e);
+        }
+    };
+
+    const handleNext = async(e : any) => {
+        if (isLastStep()) {
+            setCompleted(true);
+        }
+        //handleReadData(e);
+        const isStepValid = await formMethods.trigger();
+        if (isStepValid) {
+            setPage((prevActiveStep) => prevActiveStep + 1);
+        }
+    };
+    
+    const handleBack = () => {
+        setPage((prevActiveStep) => prevActiveStep - 1);
+    };
+
+    const handleReset = () => {
+        setPage(0);
+        formMethods.reset();
+    };
+
+    function handleOnClick(e : any) {
+        formMethods.handleSubmit(onSubmit, onInvalid);
+        setPage(page + 1);
+    }
+    
+    const eventHandlerFunctions = {handleNext, handleBack, handleSave};
+
     return (
         <> 
         <Box
@@ -173,7 +256,7 @@ export default function FormWizard({
                     <FormProvider { ...formMethods }>
                         <form onSubmit={formMethods.handleSubmit(onSubmit)}>
                             <PageDisplay completed={completed} page={page} formMethods={formMethods}/>
-                            <Navigation isValid={isValid} page={page} fieldGroups={fieldGroups}/>
+                            <Navigation eventHandler={eventHandlerFunctions} isValid={isValid} page={page} fieldGroups={fieldGroups}/>
                         </form>
                     </FormProvider>
                 </ThemeProvider>
