@@ -64,7 +64,7 @@
     "classnames": "^2.3.1",
     "dayjs": "^1.11.10",
     "lodash": "^4.17.21",
-    "next": "^13.3.0",
+    "next": "^13.5.0",
     "next-compose-plugins": "^2.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
